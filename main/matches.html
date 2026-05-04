@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Pro-Court | Matches</title>
+    <style>
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animated-bg {
+            background: linear-gradient(-45deg, #064e3b, #022c22, #065f46, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        .sidebar-expanded { width: 280px; }
+        .sidebar-collapsed { width: 90px; }
+        .sidebar-transition { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .hide-text { 
+            opacity: 0;
+            display: none;
+        }
+
+        .tooltip {
+            position: absolute;
+            left: 100%;
+            margin-left: 10px;
+            padding: 4px 8px;
+            background: #10b981;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        
+        .sidebar-collapsed #logoToggle:hover .tooltip {
+            opacity: 1;
+        }
+
+        .filter-btn.active {
+            background-color: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        #matchModal {
+            backdrop-filter: blur(12px);
+            display: none;
+        }
+
+        .score-input::-webkit-inner-spin-button, 
+        .score-input::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+    </style>
+</head>
+<body class="animated-bg text-slate-100 font-sans flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar-expanded sidebar-transition h-screen bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col z-40 relative">
+        <button id="logoToggle" class="relative flex items-center gap-3 mb-10 mt-8 px-6 group outline-none">
+            <div id="logoIconContainer" class="bg-emerald-500 p-2.5 rounded-xl shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)] group-hover:bg-emerald-400 transition-all duration-300 flex items-center justify-center">
+                <svg id="toggleSvg" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+            </div>
+            <div class="sidebar-label flex flex-col items-start overflow-hidden transition-opacity duration-300 text-left">
+                <h1 class="text-xl font-black uppercase tracking-tighter italic whitespace-nowrap">Pro-Court</h1>
+                <span class="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] -mt-1">Collapse View</span>
+            </div>
+            <span class="tooltip">Expand Menu</span>
+        </button>
+
+        <nav class="flex-1 space-y-2 px-3">
+            <a href="dashboard.html" class="flex items-center gap-4 px-4 py-4 rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                <span class="sidebar-label">Dashboard</span>
+            </a>
+            <a href="events.html" class="flex items-center gap-4 px-4 py-4 rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
+                <span class="sidebar-label">Events</span>
+            </a>
+            <a href="#" class="flex items-center gap-4 px-4 py-4 rounded-xl bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-900/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z" /></svg>
+                <span class="sidebar-label">Matches</span>
+            </a>
+            <a href="#" class="flex items-center gap-4 px-4 py-4 rounded-xl text-slate-400 hover:bg-white/10 hover:text-white transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                <span class="sidebar-label">Players</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto pt-6 border-t border-white/10 px-3 pb-6">
+            <div class="flex items-center gap-3 px-3 mb-6 overflow-hidden">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-emerald-500 flex items-center justify-center font-black text-white border-2 border-white/20">
+                    <span id="userInitial">P</span>
+                </div>
+                <div class="sidebar-label">
+                    <p id="userNameDisplay" class="text-sm font-bold truncate">Loading...</p>
+                    <p id="userCityDisplay" class="text-[10px] text-slate-500 uppercase font-black italic">Scanning...</p>
+                </div>
+            </div>
+            <button id="logoutBtn" class="w-full py-4 rounded-xl bg-red-500/10 text-red-500 font-bold hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                <span class="sidebar-label">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-screen overflow-y-auto p-8">
+        <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+            <div>
+                <h2 class="text-4xl font-black uppercase italic tracking-tight">Match Center</h2>
+                <p class="text-slate-400 font-medium italic">Track real-time scores and upcoming clashes</p>
+            </div>
+            <div class="flex bg-white/5 border border-white/10 p-1.5 rounded-2xl backdrop-blur-sm">
+                <button id="filterLive" class="filter-btn active px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Live</button>
+                <button id="filterScheduled" class="filter-btn px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-400 hover:text-white">Scheduled</button>
+                <button id="filterFinished" class="filter-btn px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all text-slate-400 hover:text-white">Finished</button>
+            </div>
+        </header>
+
+        <!-- Search and Selection -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+            <div class="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 flex items-center gap-4 backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input type="text" id="matchSearch" placeholder="SEARCH TEAMS OR EVENTS..." class="bg-transparent border-none outline-none w-full font-bold uppercase text-xs tracking-widest placeholder:text-slate-600">
+            </div>
+            <button id="createMatchBtn" class="bg-white text-slate-900 font-black uppercase px-8 py-4 rounded-2xl shadow-xl hover:bg-emerald-500 hover:text-white transition-all text-xs tracking-widest italic">
+                + New Matchup
+            </button>
+        </div>
+
+        <!-- Matches Grid -->
+        <div id="matchesContainer" class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <!-- Dynamic Matches injected here -->
+        </div>
+    </main>
+
+    <!-- Match Modal -->
+    <div id="matchModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/60">
+        <div class="bg-white text-slate-900 w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl relative">
+            <button id="closeMatchModal" class="absolute top-8 right-8 text-slate-400 hover:text-slate-900 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="text-3xl font-black uppercase italic tracking-tighter mb-8">Match Details</h3>
+            
+            <form id="matchForm" class="space-y-6">
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Select Event</label>
+                    <select id="eventSelect" required class="w-full bg-slate-100 border-none rounded-2xl px-5 py-4 font-bold uppercase text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none appearance-none">
+                        <option value="" disabled selected>Choose an event</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-emerald-600 ml-2">Team A</label>
+                        <input type="text" id="teamA" required placeholder="TEAM NAME" class="w-full bg-slate-100 border-none rounded-2xl px-5 py-3 font-bold uppercase text-sm outline-none">
+                        <input type="number" id="scoreA" value="0" class="score-input w-full bg-slate-900 text-white text-center rounded-2xl py-4 text-3xl font-black italic">
+                    </div>
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 ml-2">Team B</label>
+                        <input type="text" id="teamB" required placeholder="TEAM NAME" class="w-full bg-slate-100 border-none rounded-2xl px-5 py-3 font-bold uppercase text-sm outline-none">
+                        <input type="number" id="scoreB" value="0" class="score-input w-full bg-slate-900 text-white text-center rounded-2xl py-4 text-3xl font-black italic">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Court Number</label>
+                    <input type="text" id="courtNum" placeholder="e.g. 01" class="w-full bg-slate-100 border-none rounded-2xl px-5 py-3 font-bold uppercase text-sm outline-none">
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-500 py-5 rounded-2xl font-black uppercase italic text-xs tracking-widest text-white shadow-lg shadow-emerald-200 hover:bg-emerald-400 transition-all">Create Matchup</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFPXhzIelkHjNl-hUYJONlrgj8xgCnjUI",
+            authDomain: "badminton-match-making.firebaseapp.com",
+            databaseURL: "https://badminton-match-making-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "badminton-match-making",
+            storageBucket: "badminton-match-making.firebasestorage.app",
+            messagingSenderId: "592338098121",
+            appId: "1:592338098121:web:cae00782619118a223fa18"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Sidebar logic
+        const sidebar = document.getElementById('sidebar');
+        const logoToggle = document.getElementById('logoToggle');
+        const labels = document.querySelectorAll('.sidebar-label');
+        logoToggle.addEventListener('click', () => {
+            const isCollapsing = sidebar.classList.contains('sidebar-expanded');
+            if (isCollapsing) {
+                sidebar.classList.replace('sidebar-expanded', 'sidebar-collapsed');
+                labels.forEach(l => l.classList.add('hide-text'));
+                document.getElementById('toggleSvg').style.transform = 'rotate(180deg)';
+            } else {
+                sidebar.classList.replace('sidebar-collapsed', 'sidebar-expanded');
+                setTimeout(() => labels.forEach(l => l.classList.remove('hide-text')), 150);
+                document.getElementById('toggleSvg').style.transform = 'rotate(0deg)';
+            }
+        });
+
+        // Data Management
+        let allMatches = [];
+        let currentFilter = 'live';
+
+        const matchModal = document.getElementById('matchModal');
+        const createMatchBtn = document.getElementById('createMatchBtn');
+        const closeMatchModal = document.getElementById('closeMatchModal');
+        const matchForm = document.getElementById('matchForm');
+        const matchesContainer = document.getElementById('matchesContainer');
+        const eventSelect = document.getElementById('eventSelect');
+
+        createMatchBtn.addEventListener('click', () => matchModal.style.display = 'flex');
+        closeMatchModal.addEventListener('click', () => matchModal.style.display = 'none');
+
+        // Fetch Events for Dropdown
+        onValue(ref(database, 'events'), (snapshot) => {
+            eventSelect.innerHTML = '<option value="" disabled selected>Choose an event</option>';
+            if (snapshot.exists()) {
+                Object.values(snapshot.val()).forEach(ev => {
+                    const opt = document.createElement('option');
+                    opt.value = ev.name;
+                    opt.textContent = ev.name;
+                    eventSelect.appendChild(opt);
+                });
+            }
+        });
+
+        // Create Match Submit
+        matchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newMatch = {
+                eventName: eventSelect.value,
+                teamA: document.getElementById('teamA').value,
+                teamB: document.getElementById('teamB').value,
+                scoreA: parseInt(document.getElementById('scoreA').value),
+                scoreB: parseInt(document.getElementById('scoreB').value),
+                court: document.getElementById('courtNum').value || "TBA",
+                status: "scheduled", // Default to scheduled
+                createdAt: Date.now(),
+                createdBy: auth.currentUser.uid
+            };
+
+            try {
+                await push(ref(database, 'matches'), newMatch);
+                matchForm.reset();
+                matchModal.style.display = 'none';
+            } catch (err) {
+                alert("Error creating match: " + err.message);
+            }
+        });
+
+        // Real-time Match Fetching & Rendering
+        onValue(ref(database, 'matches'), (snapshot) => {
+            allMatches = [];
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                allMatches = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            }
+            filterAndRender();
+        });
+
+        function filterAndRender() {
+            const searchTerm = document.getElementById('matchSearch').value.toLowerCase();
+            const filtered = allMatches.filter(m => {
+                const matchesSearch = m.teamA.toLowerCase().includes(searchTerm) || 
+                                    m.teamB.toLowerCase().includes(searchTerm) || 
+                                    m.eventName.toLowerCase().includes(searchTerm);
+                return matchesSearch && m.status === currentFilter;
+            });
+
+            renderMatches(filtered);
+        }
+
+        function renderMatches(matchesArray) {
+            matchesContainer.innerHTML = '';
+            if (matchesArray.length === 0) {
+                matchesContainer.innerHTML = `<p class="col-span-full text-slate-500 font-bold uppercase italic text-center py-20 opacity-50">No ${currentFilter} matches found</p>`;
+                return;
+            }
+
+            matchesArray.forEach(match => {
+                const card = document.createElement('div');
+                card.className = "bg-white/95 rounded-[2.5rem] p-8 text-slate-900 shadow-2xl relative overflow-hidden transition-all hover:translate-y-[-5px]";
+                card.innerHTML = `
+                    <div class="absolute top-0 left-0 w-2 h-full ${match.status === 'live' ? 'bg-emerald-500' : 'bg-slate-300'}"></div>
+                    <div class="flex justify-between items-center mb-8">
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">${match.eventName}</span>
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${match.status === 'live' ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-slate-100 text-slate-500'}">
+                            ${match.status === 'live' ? '● Live' : match.status}
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="text-center flex-1">
+                            <h4 class="text-xl font-black italic uppercase leading-none mb-2 truncate">${match.teamA}</h4>
+                            <div class="text-5xl font-black tracking-tighter">${match.scoreA}</div>
+                        </div>
+                        <div class="text-slate-300 font-black italic text-2xl uppercase tracking-tighter">VS</div>
+                        <div class="text-center flex-1">
+                            <h4 class="text-xl font-black italic uppercase leading-none mb-2 truncate">${match.teamB}</h4>
+                            <div class="text-5xl font-black tracking-tighter">${match.scoreB}</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase italic">Court ${match.court}</p>
+                        <div class="flex gap-2">
+                             <button onclick="window.updateStatus('${match.id}', 'live')" class="text-[9px] font-black uppercase bg-emerald-100 text-emerald-600 px-3 py-1 rounded-lg">Go Live</button>
+                             <button onclick="window.updateStatus('${match.id}', 'finished')" class="text-[9px] font-black uppercase bg-slate-100 text-slate-600 px-3 py-1 rounded-lg">Finish</button>
+                        </div>
+                    </div>
+                `;
+                matchesContainer.appendChild(card);
+            });
+        }
+
+        // Global function to update status from card
+        window.updateStatus = async (id, newStatus) => {
+            await update(ref(database, `matches/${id}`), { status: newStatus });
+        };
+
+        // Filter Selection
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active', 'text-white');
+                    b.classList.add('text-slate-400');
+                });
+                btn.classList.add('active', 'text-white');
+                currentFilter = btn.id.replace('filter', '').toLowerCase();
+                filterAndRender();
+            });
+        });
+
+        document.getElementById('matchSearch').addEventListener('input', filterAndRender);
+
+        // Profile sync
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) window.location.href = "login.html";
+            const snap = await get(ref(database, 'players/' + user.uid));
+            if (snap.exists()) {
+                const data = snap.val();
+                document.getElementById('userNameDisplay').innerText = data.fullName;
+                document.getElementById('userCityDisplay').innerText = data.city;
+                document.getElementById('userInitial').innerText = data.fullName.charAt(0).toUpperCase();
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+    </script>
+</body>
+</html>
