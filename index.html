@@ -1,131 +1,202 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Full Screen</title>
+    <!-- Required Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <title>Pro-Court</title>
+    
     <style>
-        .glass-gradient-bg {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(13, 148, 136, 0.2) 100%);
-            backdrop-filter: blur(50px);
-        }
-        
-        .dark-glass-input {
-            background: rgba(45, 45, 45, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        .dark-glass-input:focus {
-            background: rgba(60, 60, 60, 0.9);
-            border-color: rgba(16, 185, 129, 0.5);
-            outline: none;
+        /* Define p5.js canvas positioning */
+        #p5-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
-        .gradient-button {
-            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+        /* Custom animation for the badge sparkle */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.03); }
+        }
+        .badge-pulse {
+            animation: subtlePulse 3s infinite ease-in-out;
+        }
+
+        /* --- Page Transition Styles --- */
+        #page-loader {
+            position: fixed;
+            inset: 0;
+            background: #022c22; /* emerald-950 */
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+        }
+
+        .loader-hidden {
+            opacity: 0;
+            visibility: hidden;
         }
     </style>
 </head>
-<body class="bg-black text-gray-200 h-full font-sans overflow-hidden">
+<body class="bg-slate-50 font-sans text-slate-900 overflow-x-hidden">
 
-    <!-- Main Container: h-screen and w-screen ensures it fills the viewport -->
-    <div class="flex flex-col md:flex-row h-screen w-screen overflow-hidden">
-        
-        <!-- Left Section: 50% Width, Full Height -->
-        <div class="hidden md:flex w-1/2 h-full p-20 flex-col justify-between glass-gradient-bg relative">
-            <!-- Decorative Blurred Blobs -->
-            <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-emerald-800 rounded-full mix-blend-screen filter blur-[120px] opacity-50"></div>
-            <div class="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-teal-900 rounded-full mix-blend-screen filter blur-[120px] opacity-50"></div>
-
-            <div class="relative z-10">
-                <h1 class="text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
-                    Get Started <br />with Us
-                </h1>
-                <p class="text-xl text-gray-400 mt-8 max-w-md leading-relaxed">
-                    Complete these easy steps to access your workspace and manage your projects.
-                </p>
-            </div>
-
-            <!-- Status Step Cards (Matching image_64fdd7.png) -->
-            <div class="relative z-10 flex gap-6">
-                <div class="bg-white text-black p-8 rounded-3xl flex-1 shadow-2xl">
-                    <div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold mb-4">1</div>
-                    <span class="font-bold text-lg block">Sign up your account</span>
-                </div>
-                <div class="bg-white/5 border border-white/10 p-8 rounded-3xl flex-1 backdrop-blur-md">
-                    <div class="w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center font-bold mb-4">2</div>
-                    <span class="font-bold text-lg block text-gray-300">Set up your workspace</span>
-                </div>
-                <div class="bg-white/5 border border-white/10 p-8 rounded-3xl flex-1 backdrop-blur-md">
-                    <div class="w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center font-bold mb-4">3</div>
-                    <span class="font-bold text-lg block text-gray-300">Set up your profile</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Section: Login Form (Black Side) -->
-        <div class="w-full md:w-1/2 h-full p-8 md:p-20 flex flex-col justify-center items-center bg-black">
-            <div class="w-full max-w-md">
-                <div class="text-center md:text-left">
-                    <h2 class="text-4xl font-bold tracking-tight">Sign Up Account</h2>
-                    <p class="text-gray-500 mt-3">Enter your personal data to create your account.</p>
-                </div>
-
-                <!-- Social Buttons -->
-                <div class="grid grid-cols-2 gap-4 mt-10">
-                    <button class="bg-transparent border border-gray-800 hover:bg-gray-900 rounded-xl py-3 flex items-center justify-center transition">
-                        <span class="mr-2">G</span> Google
-                    </button>
-                    <button class="bg-transparent border border-gray-800 hover:bg-gray-900 rounded-xl py-3 flex items-center justify-center transition">
-                        <span class="mr-2">𝕏</span> Github
-                    </button>
-                </div>
-
-                <div class="relative flex items-center my-10">
-                    <div class="flex-grow border-t border-gray-800"></div>
-                    <span class="mx-4 text-gray-600 text-sm">Or</span>
-                    <div class="flex-grow border-t border-gray-800"></div>
-                </div>
-
-                <!-- Input Group -->
-                <form class="space-y-5">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">First Name</label>
-                            <input type="text" placeholder="eg. John" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Last Name</label>
-                            <input type="text" placeholder="eg. Francisco" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Email</label>
-                        <input type="email" placeholder="eg. johnfrans@gmail.com" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Password</label>
-                        <div class="relative">
-                            <input type="password" placeholder="Enter your password" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
-                        </div>
-                        <p class="text-xs text-gray-600 mt-2">Must be at least 8 characters.</p>
-                    </div>
-
-                    <button type="submit" class="w-full bg-white text-black font-bold py-4 rounded-xl mt-6 hover:bg-gray-200 transition duration-200">
-                        Sign Up
-                    </button>
-                </form>
-
-                <p class="text-center text-gray-500 mt-8">
-                    Already have an account? <a href="#" class="text-white hover:underline font-semibold">Log in</a>
-                </p>
-            </div>
+    <!-- Page Loader Overlay -->
+    <div id="page-loader">
+        <div class="flex flex-col items-center">
+            <!-- Animated Shuttlecock Loader -->
+            <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <p class="mt-4 text-emerald-400 font-black uppercase tracking-widest animate-pulse">Entering Court...</p>
         </div>
     </div>
 
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-emerald-950/85 backdrop-blur-lg border-b border-emerald-800 text-white animate-[fadeIn_0.5s_ease-out]">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <span class="text-xl font-black uppercase tracking-tighter">Pro-Court</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-bold uppercase tracking-widest">
+                <a href="#features" class="relative hover:text-emerald-400 transition group">
+                    Features
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#" class="relative hover:text-emerald-400 transition group">
+                    Membership
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#" class="relative hover:text-emerald-400 transition group">
+                    Shop
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 transition-all duration-300 group-hover:w-full"></span>
+                </a>
+            </div>
+            <a href="./auth/login.html" class="transition-link bg-emerald-500 hover:bg-emerald-400 px-6 py-2 rounded-full text-sm font-black uppercase tracking-widest transition duration-300 hover:shadow-lg hover:shadow-emerald-500/30 active:scale-95">Login</a>
+        </div>
+    </nav>
+
+    <!-- 1. HERO SECTION -->
+    <section class="relative min-h-screen flex items-center pt-24 bg-emerald-950 overflow-hidden">
+        <div id="p5-bg"></div>
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
+            <div class="animate-[slideInLeft_0.8s_ease-out]">
+                <span class="badge-pulse inline-block py-1 px-3 bg-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-[0.2em] rounded border border-emerald-500/30 mb-6">
+                    Active Season Open
+                </span>
+                <h1 class="text-5xl md:text-7xl font-black text-white uppercase leading-none mb-6">
+                    Master the <span class="text-emerald-500 inline-block animate-[pulse_3s_infinite]">Smash.</span> Own the Court.
+                </h1>
+                <p class="text-emerald-100/70 text-lg mb-10 max-w-lg leading-relaxed delay-100 animate-[fadeIn_1s_ease-out_forwards]">
+                    The ultimate platform for badminton enthusiasts. Track your stats, find local matches, and level up your game.
+                </p>
+                <div class="flex flex-wrap gap-4 delay-200 animate-[fadeIn_1s_ease-out_forwards]">
+                    <a href="./auth/login.html" class="transition-link">
+                        <button class="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-105 active:scale-95">Get Started</button>
+                    </a>
+                    <button class="px-8 py-4 border-2 border-emerald-500/50 text-white font-black uppercase tracking-widest rounded-xl hover:bg-emerald-500/10 transition-all duration-300">View Leagues</button>
+                </div>
+            </div>
+
+            <div class="relative hidden md:block animate-[slideInRight_0.8s_ease-out]">
+                <img src="https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&q=80&w=800" 
+                    alt="Badminton Action" 
+                    class="rounded-3xl shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500 border-8 border-white/5 hover:scale-105">
+                <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl">
+                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Live Feed</p>
+                    <p class="text-3xl font-black text-emerald-600 animate-[pulse_2s_infinite]">1,288 Players Online</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- p5.js Background Script -->
+    <script>
+        let gridLines = [];
+        let particles = [];
+
+        function setup() {
+            const canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('p5-bg');
+            for (let i = 0; i < 15; i++) { particles.push(new ShuttlecockParticle()); }
+            for (let i = 0; i < 5; i++) {
+                gridLines.push({ y: random(height), speed: random(0.2, 0.5), opacity: random(20, 50) });
+            }
+        }
+
+        function draw() {
+            clear(); 
+            stroke(4, 120, 87, 40);
+            for (let lineItem of gridLines) {
+                lineItem.y += lineItem.speed;
+                if (lineItem.y > height) lineItem.y = 0;
+                stroke(4, 120, 87, lineItem.opacity);
+                line(0, lineItem.y, width, lineItem.y + (width * 0.05));
+            }
+            for (let p of particles) { p.update(); p.display(); }
+        }
+
+        function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
+        class ShuttlecockParticle {
+            constructor() {
+                this.x = random(width); this.y = random(height);
+                this.vx = random(-1, 1); this.vy = random(-2, 2);
+                this.size = random(5, 12); this.opacity = random(30, 80);
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            display() {
+                noStroke(); fill(110, 231, 183, this.opacity);
+                push(); translate(this.x, this.y);
+                let angle = atan2(this.vy, this.vx); rotate(angle + HALF_PI); 
+                ellipse(0, 0, this.size, this.size);
+                stroke(110, 231, 183, this.opacity * 0.6); strokeWeight(1);
+                line(0, 0, -this.size/2, -this.size * 1.5); line(0, 0, 0, -this.size * 1.8); line(0, 0, this.size/2, -this.size * 1.5);
+                pop();
+            }
+        }
+
+        // --- Page Transition Logic ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('page-loader');
+            // Hide loader when page is ready
+            loader.classList.add('loader-hidden');
+        });
+
+        // Intercept links to show loader before leaving
+        document.querySelectorAll('a.transition-link, nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const destination = this.href;
+                
+                // Only trigger if it's an external link (not an ID on same page)
+                if (destination && !destination.includes('#') && this.target !== '_blank') {
+                    e.preventDefault();
+                    const loader = document.getElementById('page-loader');
+                    
+                    // Show loader again
+                    loader.classList.remove('loader-hidden');
+                    
+                    // Navigate after a short delay (for the animation to be seen)
+                    setTimeout(() => {
+                        window.location.href = destination;
+                    }, 500); 
+                }
+            });
+        });
+    </script>
 </body>
 </html>
