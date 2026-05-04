@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Full Screen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass-gradient-bg {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(13, 148, 136, 0.2) 100%);
+            backdrop-filter: blur(50px);
+        }
+        
+        .dark-glass-input {
+            background: rgba(45, 45, 45, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .dark-glass-input:focus {
+            background: rgba(60, 60, 60, 0.9);
+            border-color: rgba(16, 185, 129, 0.5);
+            outline: none;
+        }
+
+        .gradient-button {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-200 h-full font-sans overflow-hidden">
+
+    <!-- Main Container: h-screen and w-screen ensures it fills the viewport -->
+    <div class="flex flex-col md:flex-row h-screen w-screen overflow-hidden">
+        
+        <!-- Left Section: 50% Width, Full Height -->
+        <div class="hidden md:flex w-1/2 h-full p-20 flex-col justify-between glass-gradient-bg relative">
+            <!-- Decorative Blurred Blobs -->
+            <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-emerald-800 rounded-full mix-blend-screen filter blur-[120px] opacity-50"></div>
+            <div class="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-teal-900 rounded-full mix-blend-screen filter blur-[120px] opacity-50"></div>
+
+            <div class="relative z-10">
+                <h1 class="text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
+                    Get Started <br />with Us
+                </h1>
+                <p class="text-xl text-gray-400 mt-8 max-w-md leading-relaxed">
+                    Complete these easy steps to access your workspace and manage your projects.
+                </p>
+            </div>
+
+            <!-- Status Step Cards (Matching image_64fdd7.png) -->
+            <div class="relative z-10 flex gap-6">
+                <div class="bg-white text-black p-8 rounded-3xl flex-1 shadow-2xl">
+                    <div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold mb-4">1</div>
+                    <span class="font-bold text-lg block">Sign up your account</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-8 rounded-3xl flex-1 backdrop-blur-md">
+                    <div class="w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center font-bold mb-4">2</div>
+                    <span class="font-bold text-lg block text-gray-300">Set up your workspace</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-8 rounded-3xl flex-1 backdrop-blur-md">
+                    <div class="w-8 h-8 bg-white/20 text-white rounded-full flex items-center justify-center font-bold mb-4">3</div>
+                    <span class="font-bold text-lg block text-gray-300">Set up your profile</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section: Login Form (Black Side) -->
+        <div class="w-full md:w-1/2 h-full p-8 md:p-20 flex flex-col justify-center items-center bg-black">
+            <div class="w-full max-w-md">
+                <div class="text-center md:text-left">
+                    <h2 class="text-4xl font-bold tracking-tight">Sign Up Account</h2>
+                    <p class="text-gray-500 mt-3">Enter your personal data to create your account.</p>
+                </div>
+
+                <!-- Social Buttons -->
+                <div class="grid grid-cols-2 gap-4 mt-10">
+                    <button class="bg-transparent border border-gray-800 hover:bg-gray-900 rounded-xl py-3 flex items-center justify-center transition">
+                        <span class="mr-2">G</span> Google
+                    </button>
+                    <button class="bg-transparent border border-gray-800 hover:bg-gray-900 rounded-xl py-3 flex items-center justify-center transition">
+                        <span class="mr-2">𝕏</span> Github
+                    </button>
+                </div>
+
+                <div class="relative flex items-center my-10">
+                    <div class="flex-grow border-t border-gray-800"></div>
+                    <span class="mx-4 text-gray-600 text-sm">Or</span>
+                    <div class="flex-grow border-t border-gray-800"></div>
+                </div>
+
+                <!-- Input Group -->
+                <form class="space-y-5">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">First Name</label>
+                            <input type="text" placeholder="eg. John" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Last Name</label>
+                            <input type="text" placeholder="eg. Francisco" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Email</label>
+                        <input type="email" placeholder="eg. johnfrans@gmail.com" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Password</label>
+                        <div class="relative">
+                            <input type="password" placeholder="Enter your password" class="w-full dark-glass-input text-white px-4 py-3 rounded-xl">
+                        </div>
+                        <p class="text-xs text-gray-600 mt-2">Must be at least 8 characters.</p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-white text-black font-bold py-4 rounded-xl mt-6 hover:bg-gray-200 transition duration-200">
+                        Sign Up
+                    </button>
+                </form>
+
+                <p class="text-center text-gray-500 mt-8">
+                    Already have an account? <a href="#" class="text-white hover:underline font-semibold">Log in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
